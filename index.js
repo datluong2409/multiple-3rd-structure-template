@@ -1,7 +1,7 @@
 const ThirdPartyTimeSheetFactory = require("./factories/timesheet.factory");
-const EHStrategy = require("./strategy/eh.strategy");
-const HumanForceStrategy = require("./strategy/humanforce.strategy");
-const MYOBStrategy = require("./strategy/myob.strategy");
+const EHStrategy = require("./strategies/eh.strategy");
+const HumanForceStrategy = require("./strategies/humanforce.strategy");
+const MYOBStrategy = require("./strategies/myob.strategy");
 
 async function demoHumanForce() {
     const factory = new ThirdPartyTimeSheetFactory(new HumanForceStrategy());

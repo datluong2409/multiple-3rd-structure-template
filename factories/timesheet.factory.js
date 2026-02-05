@@ -1,9 +1,9 @@
 const EHTimeSheetService = require("../services/employment-hero/timesheet.service");
 const HumanForceTimeSheetService = require("../services/humanforce/timesheet.service");
 const MYOBTimeSheetService = require("../services/myob/timesheet.service");
-const EHStrategy = require("../strategy/eh.strategy");
-const HumanForceStrategy = require("../strategy/humanforce.strategy");
-const MYOBStrategy = require("../strategy/myob.strategy");
+const EHStrategy = require("../strategies/eh.strategy");
+const HumanForceStrategy = require("../strategies/humanforce.strategy");
+const MYOBStrategy = require("../strategies/myob.strategy");
 const BaseFactory = require("./base.factory");
 
 class ThirdPartyTimeSheetFactory extends BaseFactory {
