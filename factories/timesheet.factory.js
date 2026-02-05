@@ -1,3 +1,4 @@
+const TimeSheetBaseService = require("../services/base/timesheet-base.service");
 const EHTimeSheetService = require("../services/employment-hero/timesheet.service");
 const HumanForceTimeSheetService = require("../services/humanforce/timesheet.service");
 const MYOBTimeSheetService = require("../services/myob/timesheet.service");
@@ -8,7 +9,7 @@ const BaseFactory = require("./base.factory");
 
 class ThirdPartyTimeSheetFactory extends BaseFactory {
   /**
-   * @type {HumanForceTimeSheetService | MYOBTimeSheetService | EHTimeSheetService}
+   * @type {TimeSheetBaseService | HumanForceTimeSheetService | MYOBTimeSheetService | EHTimeSheetService}
    */
   service = null;
 
