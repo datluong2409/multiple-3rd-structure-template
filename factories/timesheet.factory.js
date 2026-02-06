@@ -1,31 +1,23 @@
-const TimeSheetBaseService = require("../services/base/timesheet-base.service");
-const EHTimeSheetService = require("../services/employment-hero/timesheet.service");
-const HumanForceTimeSheetService = require("../services/humanforce/timesheet.service");
-const MYOBTimeSheetService = require("../services/myob/timesheet.service");
-const EHStrategy = require("../strategies/eh.strategy");
-const HumanForceStrategy = require("../strategies/humanforce.strategy");
-const MYOBStrategy = require("../strategies/myob.strategy");
-const BaseFactory = require("./base.factory");
+const createEHTimeSheetService = require("../services/employment-hero/timesheet.service");
+const createHumanForceTimeSheetService = require("../services/humanforce/timesheet.service");
+const createMYOBTimeSheetService = require("../services/myob/timesheet.service");
+const createBaseFactory = require("./base.factory");
 
-class ThirdPartyTimeSheetFactory extends BaseFactory {
-  /**
-   * @type {TimeSheetBaseService | HumanForceTimeSheetService | MYOBTimeSheetService | EHTimeSheetService}
-   */
-  service = null;
+function createThirdPartyTimeSheetFactory(strategy) {
+  const mappings = new Map([
+    ["HumanForceStrategy", createHumanForceTimeSheetService],
+    ["MYOBStrategy", createMYOBTimeSheetService],
+    ["EHStrategy", createEHTimeSheetService],
+  ]);
 
-  constructor(strategy) {
-    super(strategy);
+  const factory = createBaseFactory(strategy, mappings);
+  factory.dispatchService();
 
-    this.setMappings(
-      new Map([
-        [HumanForceStrategy, HumanForceTimeSheetService],
-        [MYOBStrategy, MYOBTimeSheetService],
-        [EHStrategy, EHTimeSheetService],
-      ]),
-    );
-
-    this.dispatchService();
-  }
+  return new Proxy(factory, {
+    get(target, prop) {
+      return target[prop];
+    }
+  });
 }
 
-module.exports = ThirdPartyTimeSheetFactory;
+module.exports = createThirdPartyTimeSheetFactory;

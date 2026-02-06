@@ -1,5 +1,4 @@
-const BaseStrategy = require("./base.strategy");
-const MYOBTimeSheetService = require("../services/myob/timesheet.service");
+const createBaseStrategy = require("./base.strategy");
 
 /**
  * @param {Object} [params] - Initialization options.
@@ -7,20 +6,23 @@ const MYOBTimeSheetService = require("../services/myob/timesheet.service");
  * @param {string} [params.accessToken] - Access token for API requests.
  * @param {string} [params.refreshToken] - Refresh token for renewing access.
  */
-class MYOBStrategy extends BaseStrategy {
-  name = "MYOB";
+function createMYOBStrategy(params = {}) {
+  const base = createBaseStrategy(params);
+  
+  return {
+    ...base,
+    name: "MYOB",
+    strategyType: "MYOBStrategy",
 
-  constructor() {
-    super();
-  }
-
-  async authenticate() {
-    console.log("Authenticating with MYOB API");
-    return {
-      tenantId: "myob-tenant-001",
-      userId: "myob-user-123",
-      name: "MYOB User",
-    };
-  }
+    async authenticate() {
+      console.log("Authenticating with MYOB API");
+      return {
+        tenantId: "myob-tenant-001",
+        userId: "myob-user-123",
+        name: "MYOB User",
+      };
+    }
+  };
 }
-module.exports = MYOBStrategy;
+
+module.exports = createMYOBStrategy;

@@ -1,5 +1,4 @@
-const BaseStrategy = require("./base.strategy");
-const EHTimeSheetService = require("../services/employment-hero/timesheet.service");
+const createBaseStrategy = require("./base.strategy");
 
 /**
  * @param {Object} [params] - Initialization options.
@@ -7,20 +6,23 @@ const EHTimeSheetService = require("../services/employment-hero/timesheet.servic
  * @param {string} [params.accessToken] - Access token for API requests.
  * @param {string} [params.refreshToken] - Refresh token for renewing access.
  */
-class EHStrategy extends BaseStrategy {
-  name = "EH";
+function createEHStrategy(params = {}) {
+  const base = createBaseStrategy(params);
+  
+  return {
+    ...base,
+    name: "EH",
+    strategyType: "EHStrategy",
 
-  constructor() {
-    super();
-  }
-
-  async authenticate() {
-    console.log("Authenticating with Employment Hero API");
-    return {
-      tenantId: "eh-tenant-001",
-      userId: "eh-user-123",
-      name: "EH User",
-    };
-  }
+    async authenticate() {
+      console.log("Authenticating with Employment Hero API");
+      return {
+        tenantId: "eh-tenant-001",
+        userId: "eh-user-123",
+        name: "EH User",
+      };
+    }
+  };
 }
-module.exports = EHStrategy;
+
+module.exports = createEHStrategy;

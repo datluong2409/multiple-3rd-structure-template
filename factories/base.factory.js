@@ -1,29 +1,33 @@
-class BaseFactory {
-  #mappings = new Map();
-  strategy = null;
-  service = null;
-
-  constructor(strategy) {
-    if (!strategy) {
-      throw new Error("Strategy is required");
-    }
-
-    this.strategy = strategy;
+function createBaseFactory(strategy, mappings = new Map()) {
+  if (!strategy) {
+    throw new Error("Strategy is required");
   }
 
-  dispatchService() {
-    for (const [Strategy, Service] of this.#mappings) {
-      if (this.strategy instanceof Strategy) {
-        this.service = new Service(this.strategy);
-        return;
+  const factory = {
+    strategy,
+    service: null,
+    mappings,
+
+    dispatchService() {
+      for (const [strategyType, serviceCreator] of this.mappings) {
+        if (this.strategy.strategyType === strategyType) {
+          this.service = serviceCreator(this.strategy);
+          return;
+        }
       }
-    }
-    throw new Error("Unsupported strategy");
-  }
+      throw new Error(`Unsupported strategy: ${this.strategy.strategyType}`);
+    },
 
-  setMappings(mappings) {
-    this.#mappings = mappings;
-  }
+    setMappings(newMappings) {
+      this.mappings = newMappings;
+    }
+  };
+
+  return new Proxy(factory, {
+    get(target, prop) {
+      return target[prop];
+    }
+  });
 }
 
-module.exports = BaseFactory;
+module.exports = createBaseFactory;

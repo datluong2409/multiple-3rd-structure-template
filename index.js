@@ -1,10 +1,11 @@
-const ThirdPartyTimeSheetFactory = require("./factories/timesheet.factory");
-const EHStrategy = require("./strategies/eh.strategy");
-const HumanForceStrategy = require("./strategies/humanforce.strategy");
-const MYOBStrategy = require("./strategies/myob.strategy");
+const createThirdPartyTimeSheetFactory = require("./factories/timesheet.factory");
+const createEHStrategy = require("./strategies/eh.strategy");
+const createHumanForceStrategy = require("./strategies/humanforce.strategy");
+const createMYOBStrategy = require("./strategies/myob.strategy");
 
 async function demoHumanForce() {
-    const factory = new ThirdPartyTimeSheetFactory(new HumanForceStrategy());
+    const strategy = createHumanForceStrategy();
+    const factory = createThirdPartyTimeSheetFactory(strategy);
     const service = factory.service;
 
     const timesheet = await service.get(1);
@@ -12,7 +13,8 @@ async function demoHumanForce() {
 }
 
 async function demoMYOB() {
-    const factory = new ThirdPartyTimeSheetFactory(new MYOBStrategy());
+    const strategy = createMYOBStrategy();
+    const factory = createThirdPartyTimeSheetFactory(strategy);
     const service = factory.service;
 
     const timesheet = await service.get(1);
@@ -20,7 +22,8 @@ async function demoMYOB() {
 }
 
 async function demoEH() {
-    const factory = new ThirdPartyTimeSheetFactory(new EHStrategy());
+    const strategy = createEHStrategy();
+    const factory = createThirdPartyTimeSheetFactory(strategy);
     const service = factory.service;
 
     const timesheet = await service.get(1);
