@@ -8,7 +8,7 @@ const HumanForceHttpClient = require('../infrastructure/providers/humanforce/hum
 const HumanForceTimesheetRepository = require('../infrastructure/providers/humanforce/humanforce.timesheet.repository');
 
 // Services
-const TimesheetService = require('../application/services/timesheet.service');
+const TimesheetService = require('../services/timesheet.service');
 
 // Create container
 const container = awilix.createContainer({
@@ -19,11 +19,6 @@ const container = awilix.createContainer({
 container.register({
   // Config & Logger
   config: awilix.asFunction(() => getConfig()).scoped(),
-
-  // HTTP Clients
-  humanforceHttpClient: awilix.asClass(HumanForceHttpClient).singleton(),
-  // Repositories
-  humanforceTimesheetRepository: awilix.asClass(HumanForceTimesheetRepository).scoped(),
 
   // Services
   timesheetService: awilix.asClass(TimesheetService).scoped(),

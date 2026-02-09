@@ -8,7 +8,6 @@ const awilix = require('awilix');
 class ThirdPartyService {
 
   constructor(dependencies) {
-    this.createTimesheetRepository = dependencies.createTimesheetRepository;
   }
 
   /**
