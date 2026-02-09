@@ -3,6 +3,14 @@
  * All repository implementations must implement these methods
  */
 class IBaseRepository {
+  mapToEntity(data) {
+    throw new Error('Method "mapToEntity()" must be implemented');
+  } 
+
+  mapToApiFormat(entity) {
+    throw new Error('Method "mapToApiFormat()" must be implemented');
+  }
+
   async findById(id) {
     throw new Error('Method "findById()" must be implemented');
   }

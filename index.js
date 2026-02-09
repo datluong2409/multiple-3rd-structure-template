@@ -1,6 +1,7 @@
 const container = require('./src/di/container');
 const { runWithConfig, createDefaultConfig } = require('./src/config');
 const logger = require('./src/shared/logger');
+const ThirdPartyService = require('./src/application/third-party.service');
 
 /**
  * Demo: Employment Hero Provider
@@ -33,7 +34,7 @@ async function demoEmploymentHero() {
 async function demoHumanForce() {
   try {
     logger.info('=== HumanForce Demo ===');
-    const timesheetService = container.resolve('timesheetService');
+    const timesheetService = ThirdPartyService.createTimeSheetServiceInstance();
     
     // Get timesheet
     const timesheet = await timesheetService.getTimesheet('humanforce', 1);
