@@ -18,6 +18,10 @@ class TimesheetService {
   async getById(id) {
     return this.repository.findById(id);
   }
+
+  async findByEmployee(employeeId, filters = {}) {
+    return this.repository.findByEmployee(employeeId, filters);
+  }
 }
 
 module.exports = TimesheetService;

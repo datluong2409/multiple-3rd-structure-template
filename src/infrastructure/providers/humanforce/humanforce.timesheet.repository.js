@@ -6,6 +6,11 @@ const { RepositoryError } = require('../../../shared/errors');
  * HumanForce Timesheet Repository
  */
 class HumanForceTimesheetRepository extends ITimesheetRepository {
+   /**
+   * @type {import('./humanforce.http-client')}
+   */
+  client = null;
+
   constructor(httpClient) {
     super();
     this.client = httpClient;
@@ -150,29 +155,6 @@ class HumanForceTimesheetRepository extends ITimesheetRepository {
       return entity;
     } catch (error) {
       throw new RepositoryError(`Failed to reject timesheet ${id}`, error);
-    }
-  }
-
-  async findByEmployee(employeeId, filters = {}) {
-    try {
-      
-      const data = [];
-      const entities = data.map(item => this.mapToEntity(item));
-      return entities;
-    } catch (error) {
-      throw new RepositoryError(`Failed to fetch timesheets for employee ${employeeId}`, error);
-    }
-  }
-
-  async findByDateRange(startDate, endDate) {
-    try {
-      
-      const data = [];
-      const entities = data.map(item => this.mapToEntity(item));
-      
-      return entities;
-    } catch (error) {
-      throw new RepositoryError('Failed to fetch timesheets by date range', error);
     }
   }
 }

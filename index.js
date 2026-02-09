@@ -9,7 +9,7 @@ async function demoHumanForce() {
     const timesheetService = ThirdPartyService.createTimeSheetServiceInstance('humanforce');
     
     // Get timesheet
-    const timesheet = await timesheetService.getById(1);
+    const timesheet = await timesheetService.findByEmployee(1);
     console.log(timesheet);
     
     

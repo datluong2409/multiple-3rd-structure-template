@@ -12,14 +12,6 @@ class ITimesheetRepository extends IBaseRepository {
   async reject(id, reason) {
     throw new Error('Method "reject()" must be implemented');
   }
-
-  async findByEmployee(employeeId, filters = {}) {
-    throw new Error('Method "findByEmployee()" must be implemented');
-  }
-
-  async findByDateRange(startDate, endDate) {
-    throw new Error('Method "findByDateRange()" must be implemented');
-  }
 }
 
 module.exports = ITimesheetRepository;
