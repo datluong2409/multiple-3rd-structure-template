@@ -1,12 +1,13 @@
-/**
- * Timesheet Service - Application Layer
- * Business logic for timesheet operations
- */
 class TimesheetService {
+    /**
+   * @type {import('../core/interfaces/timesheet.repository.interface.js')}
+   */
+  repository = null;
+
   constructor({ createTimesheetRepository, provider }) {
     this.createTimesheetRepository = createTimesheetRepository;
     this.provider = provider; // Optional default provider
-
+    
     this.repository = this.createTimesheetRepository(provider);
   }
 

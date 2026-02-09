@@ -1,5 +1,5 @@
 const { runWithConfig, createDefaultConfig } = require('./src/config');
-const ThirdPartyService = require('./src/application/third-party.service');
+const ThirdPartyService = require('./src/services/third-party.service');
 
 /**
  * Demo: HumanForce Provider

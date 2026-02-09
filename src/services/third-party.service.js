@@ -15,7 +15,7 @@ class ThirdPartyService {
    * Creates and returns a TimesheetService instance from DI container
    * @static
    * @param {string} provider - Provider name (e.g., 'employmentHero', 'humanforce', 'myob')
-   * @returns {import('./services/timesheet.service')} TimesheetService instance
+   * @returns {import('./timesheet.service')} TimesheetService instance
    */
   static createTimeSheetServiceInstance(provider) {    
     const scopedContainer = container.createScope();
