@@ -1,407 +1,266 @@
-# Multiple 3rd Party Structure Template
+# Multiple Third-Party Integration Template v2.0
 
-A flexible and extensible Node.js template for integrating multiple third-party services using the **Strategy Pattern** and **Factory Pattern**.
+A robust Node.js application template for integrating multiple third-party providers using **Clean Architecture**, **Repository Pattern**, and **Dependency Injection**.
 
-## Overview
+## 🚀 Features
 
-This project demonstrates a clean architecture for managing multiple third-party integrations across various service types. Currently implemented with timesheet services as an example, it provides a unified interface to interact with different providers (Employment Hero, Humanforce, MYOB) while maintaining separation of concerns and easy extensibility.
+- ✅ **Clean Architecture** - Separation of concerns with clear boundaries
+- ✅ **Repository Pattern** - Abstraction over data access
+- ✅ **Dependency Injection** - Using Awilix for IoC
+- ✅ **SOLID Principles** - Maintainable and extensible code
+- ✅ **Error Handling** - Comprehensive error types
+- ✅ **Logging** - Winston logger with different levels
+- ✅ **Configuration Management** - Environment-based config with validation
+- ✅ **Type Safety** - Interface-based design
+- ✅ **HTTP Client** - Axios with retry logic
+- ✅ **Multi-Provider Support** - Employment Hero, HumanForce, MYOB
 
-The architecture is designed to support **multiple service types** (timesheet, employee, payroll, leave, etc.) across multiple providers using the same pattern.
-
-## Architecture
-
-The project uses two main design patterns:
-
-### 1. **Strategy Pattern**
-Each third-party provider is represented by a strategy class that handles authentication and provider-specific logic.
-
-### 2. **Factory Pattern**
-The factory dynamically instantiates the correct service implementation based on the provided strategy.
-
-## Supported Providers
-
-- **Employment Hero (EH)** - Time and attendance management system
-- **Humanforce** - Workforce management platform
-- **MYOB** - Accounting and payroll software
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-├── index.js                          # Main entry point with demo examples
-├── factories/
-│   ├── base.factory.js              # Base factory with strategy-to-service mapping
-│   └── timesheet.factory.js         # Timesheet-specific factory implementation
-├── services/
-│   ├── base/
-│   │   ├── base.service.js          # Abstract base service with CRUD operations
-│   │   └── timesheet-base.service.js # Timesheet-specific base service
-│   ├── employment-hero/
-│   │   └── timesheet.service.js     # Employment Hero timesheet implementation
-│   ├── humanforce/
-│   │   └── timesheet.service.js     # Humanforce timesheet implementation
-│   └── myob/
-│       └── timesheet.service.js     # MYOB timesheet implementation
-└── strategy/
-    ├── base.strategy.js              # Abstract base strategy
-    ├── eh.strategy.js                # Employment Hero strategy
-    ├── humanforce.strategy.js        # Humanforce strategy
-    └── myob.strategy.js              # MYOB strategy
+src/
+├── core/                           # Domain layer (business logic)
+│   ├── entities/                  # Domain entities
+│   │   └── timesheet.entity.js
+│   └── interfaces/                # Repository interfaces
+│       ├── auth.provider.interface.js
+│       ├── base.repository.interface.js
+│       └── timesheet.repository.interface.js
+│
+├── infrastructure/                 # External dependencies
+│   ├── http/                      # HTTP client infrastructure
+│   │   └── base.http-client.js
+│   └── providers/                 # Provider-specific implementations
+│       ├── employment-hero/
+│       │   ├── eh.auth-provider.js
+│       │   ├── eh.http-client.js
+│       │   └── eh.timesheet.repository.js
+│       ├── humanforce/
+│       │   ├── humanforce.auth-provider.js
+│       │   ├── humanforce.http-client.js
+│       │   └── humanforce.timesheet.repository.js
+│       └── myob/
+│           ├── myob.auth-provider.js
+│           ├── myob.http-client.js
+│           └── myob.timesheet.repository.js
+│
+├── application/                    # Application layer
+│   └── services/
+│       └── timesheet.service.js   # Business logic orchestration
+│
+├── di/                            # Dependency injection
+│   └── container.js               # Awilix container setup
+│
+├── config/                        # Configuration
+│   └── index.js                   # Environment config & validation
+│
+└── shared/                        # Cross-cutting concerns
+    ├── errors/                    # Custom error classes
+    │   ├── base.error.js
+    │   ├── provider.error.js
+    │   ├── validation.error.js
+    │   ├── authentication.error.js
+    │   ├── repository.error.js
+    │   └── index.js
+    └── logger/                    # Logging utility
+        └── index.js
+
+index.js                           # Application entry point
 ```
 
-## Usage
-
-### Basic Example
-
-```javascript
-const ThirdPartyTimeSheetFactory = require("./factories/timesheet.factory");
-const HumanForceStrategy = require("./strategy/humanforce.strategy");
-
-async function example() {
-    // Create factory with desired strategy
-    const factory = new ThirdPartyTimeSheetFactory(new HumanForceStrategy());
-    const service = factory.service;
-
-    // Use the service
-    const timesheet = await service.get(1);
-    console.log(timesheet);
-}
-
-example();
-```
-
-### Running the Demo
-
-The [index.js](index.js) file contains demonstration examples for all three providers:
+## 🛠️ Installation
 
 ```bash
-node index.js
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env
+
+# Edit .env with your API keys (optional for demo)
 ```
 
-This will execute timesheet retrieval for all three providers sequentially.
+## ⚙️ Configuration
 
-## How It Works
+Edit `.env` file with your provider credentials:
 
-1. **Strategy Selection**: Choose a provider by instantiating its strategy class
-2. **Factory Creation**: Pass the strategy to `ThirdPartyTimeSheetFactory`
-3. **Service Dispatch**: The factory automatically maps the strategy to the correct service implementation
-4. **API Calls**: The service handles authentication via the strategy and executes API operations
+```env
+# Employment Hero
+EH_API_KEY=your_eh_api_key
+EH_BASE_URL=https://api.employmenthero.com/v1
+EH_TIMEOUT=30000
 
-### Flow Diagram
+# HumanForce
+HUMANFORCE_API_KEY=your_humanforce_api_key
+HUMANFORCE_BASE_URL=https://api.humanforce.com/v1
+HUMANFORCE_TIMEOUT=30000
 
+# MYOB
+MYOB_API_KEY=your_myob_api_key
+MYOB_BASE_URL=https://api.myob.com/v1
+MYOB_TIMEOUT=30000
+
+# Application
+NODE_ENV=development
+LOG_LEVEL=info
 ```
-Strategy → Factory → Service → API Call
-                ↓
-         Authentication
+
+## 🎯 Usage
+
+### Run the Application
+
+```bash
+npm start
 ```
 
-## Adding a New Service Type
-
-To add a new service type (e.g., Employee, Payroll, Leave), follow these steps:
-
-### 1. Create a Base Service
-
-Create a new base service file in `services/base/`:
+### Using the Timesheet Service
 
 ```javascript
-// services/base/employee-base.service.js
-const BaseService = require("./base.service");
+const container = require('./src/di/container');
 
-class EmployeeBaseService extends BaseService {
-  constructor(strategy) {
-    super(strategy);
-  }
+// Resolve service from DI container
+const timesheetService = container.resolve('timesheetService');
 
-  // Override or add service-specific methods if needed
-  async getByEmail(email) {
-    throw new Error('Method "getByEmail()" must be implemented.');
-  }
-}
+// Get timesheet from Employment Hero
+const timesheet = await timesheetService.getTimesheet('employmentHero', 1);
 
-module.exports = EmployeeBaseService;
+// List timesheets from HumanForce
+const timesheets = await timesheetService.listTimesheets('humanforce', { status: 'pending' });
+
+// Create timesheet in MYOB
+const newTimesheet = await timesheetService.createTimesheet('myob', {
+  employeeId: 'emp-123',
+  hours: 8,
+  status: 'pending'
+});
+
+// Approve timesheet
+await timesheetService.approveTimesheet('employmentHero', 1);
 ```
 
-### 2. Create Provider-Specific Services
-Services for All Service Types
+## 🏗️ Architecture Patterns
 
-Create service files for each service type in `services/newprovider/`:
+### 1. Repository Pattern
+
+Each provider has its own repository implementing the same interface:
 
 ```javascript
-// services/newprovider/timesheet.service.js
-const TimeSheetBaseService = require("../base/timesheet-base.service");
-
-class NewProviderTimeSheetService extends TimeSheetBaseService {
-  async get(id) {
-    return this.apiCall((id) => async (credentialData) => {
-      // Implement get logic using credentialData
-      return { id, provider: "NewProvider", /* ... */ };
-    })(id);
-  }
-
-  // Implement other methods: list, create, update, delete
-}
-module.exports = NewProviderTimeSheetService;
-```
-
-```javascript
-// services/newprovider/employee.service.js
-const EmployeeBaseService = require("../base/employee-base.service");
-
-class NewProviderEmployeeService extends EmployeeBaseService {
-  async get(id) {
-    return this.apiCall((id) => async (credentialData) => {
-      return { id, name: "Employee", provider: "NewProvider" };
-    })(id);
-  }
-
-  // Implement other methods
-}
-module.exports = NewProviderEmployeeService;
-```
-
-**Note**: You should create a service for each service type (timesheet, employee, payroll, etc.) that your provider supports.
-  async list() {
-    return this.apiCall(() => async (credentialData) => {
-      console.log(`[${this.strategy.name}] Listing employees`);
-      return [{ id: 1, name: "John Doe" }, { id: 2, name: "Jane Smith" }];
-    })();
-  }
-
-  // Implement other methods: create, update, delete, getByEmail
-}
-
-module.exports = EHEmployeeService;
-```
-
-### 3. Create a Factory
-
-Create a new factory file in `factories/`:
-
-```javascript
-// factories/employee.factory.js
-const EHEmployeeService = require("../services/employment-hero/employee.service");
-const HumanForceEmployeeService = require("../services/humanforce/employee.service");
-const MYOBEmployeeService = require("../services/myob/employee.service");
-const EHStrategy = require("../strategy/eh.strategy");
-const HumanForceStrategy = require("../strategy/humanforce.strategy");
-const MYOBStrategy = require("../strategy/myob.strategy");
-const BaseFactory = require("./base.factory");
-
-class ThirdPartyEmployeeFactory extends BaseFactory {
-  /**
-   * @type {HumanForceEmployeeService | MYOBEmployeeService | EHEmployeeService}
-   */
-  service = null;
-
-  constructor(strategy) {
-    super(strategy);
-
-    this.setMappings(
-      new Map([
-        [HumanForceStrategy, HumanForceEmployeeService],
-        [MYOBStrategy, MYOBEmployeeService],
-        [EHStrategy, EHEmployeeService],
-      ]),
-    );
-
-    this.dispatchService();
-  }
-}
-
-module.exports = ThirdPartyEmployeeFactory;
-```
-
-### 4. Use the New Service
-
-```javascript
-const ThirdPartyEmployeeFactory = require("./factories/employee.factory");
-const EHStrategy = require("./strategy/eh.strategy");
-
-async function example() {
-    const factory = new ThirdPartyEmployeeFactory(new EHStrategy());
-    const employeeService = factory.service;
-
-    const employee = await employeeService.get(1);
-    console.log(employee);
+class ITimesheetRepository {
+  async findById(id) {}
+  async findAll(filters) {}
+  async create(data) {}
+  async update(id, data) {}
+  async delete(id) {}
+  async approve(id) {}
+  async reject(id, reason) {}
 }
 ```
 
-### Multiple Service Types Example
+### 2. Dependency Injection
 
-You can use multiple service types with the same provider:
-
-```javascript
-const ThirdPartyTimeSheetFactory = require("./factories/timesheet.factory");
-const ThirdPartyEmployeeFactory = require("./factories/employee.factory");
-const ThirdPartyPayrollFactory = require("./factories/payroll.factory");
-const EHStrategy = require("./strategy/eh.strategy");
-
-async function example() {
-    const strategy = new EHStrategy();
-    
-    // Create multiple factories with the same strategy
-    const timesheetService = new ThirdPartyTimeSheetFactory(strategy).service;
-    const employeeService = new ThirdPartyEmployeeFactory(strategy).service;
-    const payrollService = new ThirdPartyPayrollFactory(strategy).service;
-    
-    // Use all services
-    const timesheet = await timesheetService.get(1);
-    const employee = await employeeService.get(1);
-    const payroll = await payrollService.get(1);
-}
-```
-
-## Adding a New Provider
-
-To add a new third-party provider, follow these steps:
-
-### 1. Create a Strategy
-
-Create a new strategy file in `strategy/`:
+Using Awilix for automatic dependency resolution:
 
 ```javascript
-// strategy/newprovider.strategy.js
-const BaseStrategy = require("./base.strategy");
-
-class NewProviderStrategy extends BaseStrategy {
-  name = "NewProvider";
-
-  async authenticate() {
-    // Implement authentication logic
-    return {
-      tenantId: "provider-tenant-id",
-      userId: "provider-user-id",
-      // ... authentication data
-    };
-  }
-}
-module.exports = NewProviderStrategy;
+container.register({
+  timesheetService: awilix.asClass(TimesheetService).scoped(),
+  logger: awilix.asValue(logger),
+  config: awilix.asValue(config),
+});
 ```
 
-### 2. Create a Service
+### 3. Factory Method Pattern
 
-Create a new service file in `services/newprovider/`:
-All Factories
+Dynamic repository creation based on provider:
 
-Update each factory to include the new provider:
-
-**timesheet.factory.js**:
 ```javascript
-const NewProviderTimeSheetService = require("../services/newprovider/timesheet.service");
-const NewProviderStrategy = require("../strategy/newprovider.strategy");
-
-this.setMappings(
-  new Map([
-    [HumanForceStrategy, HumanForceTimeSheetService],
-    [MYOBStrategy, MYOBTimeSheetService],
-    [EHStrategy, EHTimeSheetService],
-    [NewProviderStrategy, NewProviderTimeSheetService], // Add this
-  ]),
-);
-```
-
-**employee.factory.js**:
-```javascript
-const NewProviderEmployeeService = require("../services/newprovider/employee.service");
-const NewProviderStrategy = require("../strategy/newprovider.strategy");
-
-this.setMappings(
-  new Map([
-    [HumanForceStrategy, HumanForceEmployeeService],
-    [MYOBStrategy, MYOBEmployeeService],
-    [EMulti-Service Support**: Easily support multiple service types (timesheet, employee, payroll, etc.)
-- ✅ **Multi-Provider**: Support multiple third-party providers with consistent interface
-- ✅ **Extensible**: Easy to add new providers or service types without modifying existing code
-- ✅ **Type-Safe**: JSDoc annotations for better IDE support
-- ✅ **Separation of Concerns**: Clear separation between authentication and business logic
-- ✅ **Reusable**: Base classes reduce code duplication
-- ✅ **Strategy Reuse**: One strategy instance can be used across multiple service types
-```
-
-Repeat for all other service type factories.st NewProviderStrategy = require("../strategy/newprovider.strategy");
-
-class ThirdPartyTimeSheetFactory extends BaseFactory {
-  constructor(strategy) {
-    super(strategy);
-
-    this.setMappings(
-      new Map([
-        [HumanForceStrategy, HumanForceTimeSheetService],
-        [MYOBStrategy, MYOBTimeSheetService],
-        [EHStrategy, EHTimeSheetService],
-        [NewProviderStrategy, NewProviderTimeSheetService], // Add this line
-      ]),
-    );
-
-    this.dispatchService();
+createTimesheetRepository: (providerName) => {
+  switch (providerName) {
+    case 'employmentHero':
+      return new EHTimesheetRepository(httpClient, logger);
+    case 'humanforce':
+      return new HumanForceTimesheetRepository(httpClient, logger);
+    case 'myob':
+      return new MYOBTimesheetRepository(httpClient, logger);
   }
 }
 ```
 
-## Key Features
+## 🔌 Adding a New Provider
 
-- ✅ **Extensible**: Easy to add new providers without modifying existing code
-- ✅ **Type-Safe**: JSDoc annotations for better IDE support
-- ✅ **Separation of Concerns**: Clear separation between authentication and business logic
-- ✅ **Reusable**: Base classes reduce code duplication
-- ✅ **Error Handling**: Built-in error handling for API calls
+1. **Create provider files:**
+```bash
+src/infrastructure/providers/new-provider/
+├── new-provider.auth-provider.js
+├── new-provider.http-client.js
+└── new-provider.timesheet.repository.js
+```
 
-## API Reference
+2. **Implement interfaces:**
+   - Extend `IAuthProvider`
+   - Extend `BaseHttpClient`
+   - Extend `ITimesheetRepository`
 
-### BaseService Methods
+3. **Register in DI container:**
+```javascript
+// src/di/container.js
+const NewProviderHttpClient = require('../infrastructure/providers/new-provider/new-provider.http-client');
+const NewProviderRepository = require('../infrastructure/providers/new-provider/new-provider.timesheet.repository');
 
-All service implementations inherit these methods:
-Architecture Benefits
+// Add to createHttpClient factory
+case 'newProvider':
+  return new NewProviderHttpClient(providerConfig, logger);
 
-### Scalability Matrix
+// Add to createTimesheetRepository factory
+case 'newProvider':
+  return new NewProviderRepository(httpClient, logger);
+```
 
-| Providers → | EH | Humanforce | MYOB | New Provider |
-|------------|----|-----------:|------|--------------|
-| **Timesheet** | ✓ | ✓ | ✓ | ✓ |
-| **Employee** | ✓ | ✓ | ✓ | ✓ |
-| **Payroll** | ✓ | ✓ | ✓ | ✓ |
-| **Leave** | ✓ | ✓ | ✓ | ✓ |
-| **New Service** | ✓ | ✓ | ✓ | ✓ |
+4. **Add configuration:**
+```javascript
+// src/config/index.js
+providers: {
+  newProvider: {
+    name: 'New Provider',
+    apiKey: envVars.NEW_PROVIDER_API_KEY,
+    baseUrl: envVars.NEW_PROVIDER_BASE_URL,
+    timeout: envVars.NEW_PROVIDER_TIMEOUT,
+  }
+}
+```
 
-This architecture allows you to:
-- Add a new **provider** → Create 1 strategy + N services (one per service type)
-- Add a new **service type** → Create 1 factory + 1 base service + M implementations (one per provider)
+## 🧪 Testing
 
-## Best Practices
+```bash
+# Run tests
+npm test
 
-1. **Keep Strategies Lightweight**: Strategies should only handle authentication and provider-specific configuration
-2. **Implement All CRUD Operations**: Services should implement all base methods for consistency
-3. **Reuse Strategy Instances**: Create one strategy instance and pass it to multiple factories for different service types
-4. **Use Type Annotations**: Add JSDoc comments for better IDE support
-5. **Handle Errors Gracefully**: Use try-catch blocks and provide meaningful error messages
-6. **Test Each Provider**: Ensure each provider works independently
-7. **Create Service-Specific Base Classes**: Extend BaseService for each service type to add domain-specific methods
-8. **Consistent Naming**: Follow the naming convention: `{Provider}{ServiceType}Service` (e.g., `EHEmployeeService`)
-### BaseStrategy Methods
+# Run with coverage
+npm test -- --coverage
+```
 
-All strategies must implement:
+## 📚 Key Benefits
 
-- `authenticate()` - Returns authentication credentials for API calls
+1. **Maintainability** - Clean separation of concerns
+2. **Testability** - Easy to mock dependencies
+3. **Scalability** - Simple to add new providers
+4. **Flexibility** - Swap implementations without changing business logic
+5. **Error Handling** - Consistent error handling across providers
+6. **Logging** - Centralized logging with different levels
+7. **Configuration** - Environment-based with validation
 
-## Best Practices
+## 🔄 Migration from Old Structure
 
-1. **Keep Strategies Lightweight**: Strategies should only handle authentication and provider-specific configuration
-2. **Implement All CRUD Operations**: Services should implement all base methods for consistency
-3. **Use Type Annotations**: Add JSDoc comments for better IDE support
-4. **Handle Errors Gracefully**: Use try-catch blocks and provide meaningful error messages
-5. **Test Each Provider**: Ensure each provider works independently
+The old structure used Strategy + Factory patterns:
+- `strategies/` → Now part of `auth-provider.js`
+- `services/` → Refactored to `repositories/`
+- `factories/` → Replaced with DI container
 
-## License
+Benefits of new structure:
+- Better separation of concerns
+- Easier testing with DI
+- More flexible and extensible
+- Follows industry best practices
 
-This is a template project for internal use.
+## 📝 License
 
-## Contributing
-
-When adding new providers or features:
-1. Follow the existing code structure
-2. Maintain consistency with naming conventions
-3. Document your changes
-4. Test thoroughly with the new provider
-
----
-
-**Note**: This template uses mock authentication data. In production, implement proper authentication flows with real API credentials, environment variables, and secure credential storage.
+MIT
