@@ -7,9 +7,8 @@ const IAuthProvider = require('../../core/interfaces/auth.provider.interface');
  * Base HTTP Client for all providers
  */
 class BaseHttpClient {
-  constructor(config, logger) {
+  constructor(config) {
     this.config = config;
-    this.logger = logger;
     this.credentials = null;
     
     // Create axios instance
@@ -46,14 +45,10 @@ class BaseHttpClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        this.logger.error('HTTP request failed', {
-          url: error.config?.url,
-          method: error.config?.method,
-          status: error.response?.status,
-          message: error.message,
-        });
-        return Promise.reject(error);
-      }
+      console.log(error);
+      
+          return Promise.reject(error);
+        }
     );
   }
 

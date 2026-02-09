@@ -1,4 +1,5 @@
 const container = require("../di/container");
+const awilix = require('awilix');
 
 /**
  * Third Party Service - Factory for creating service instances
@@ -8,17 +9,20 @@ class ThirdPartyService {
 
   constructor(dependencies) {
     this.createTimesheetRepository = dependencies.createTimesheetRepository;
-    this.logger = dependencies.logger;
   }
 
   /**
    * Creates and returns a TimesheetService instance from DI container
    * @static
+   * @param {string} provider - Provider name (e.g., 'employmentHero', 'humanforce', 'myob')
    * @returns {import('./services/timesheet.service')} TimesheetService instance
    */
   static createTimeSheetServiceInstance(provider) {    
-
-    return container.resolve('timesheetService',);
+    const scopedContainer = container.createScope();
+    scopedContainer.register({
+      provider: awilix.asValue(provider)
+    });
+    return scopedContainer.resolve('timesheetService');
   }
 }
 

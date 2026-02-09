@@ -3,18 +3,19 @@
  * Business logic for timesheet operations
  */
 class TimesheetService {
-  constructor({ createTimesheetRepository, logger }) {
+  constructor({ createTimesheetRepository, provider }) {
     this.createTimesheetRepository = createTimesheetRepository;
-    this.logger = logger;
+    this.provider = provider; // Optional default provider
+
+    this.repository = this.createTimesheetRepository(provider);
   }
 
   /**
-   * Get timesheet by ID from specific provider
+   * Get timesheet by ID
+   * @param {string|number} id - Timesheet ID
    */
-  async getTimesheet(provider, id) {
-    this.logger.info('Getting timesheet', { provider, id });
-    const repository = this.createTimesheetRepository(provider);
-    return repository.findById(id);
+  async getById(id) {
+    return this.repository.findById(id);
   }
 }
 

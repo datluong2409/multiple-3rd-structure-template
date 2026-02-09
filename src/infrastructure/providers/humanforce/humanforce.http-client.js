@@ -5,9 +5,9 @@ const HumanForceAuthProvider = require('./humanforce.auth-provider');
  * HumanForce HTTP Client
  */
 class HumanForceHttpClient extends BaseHttpClient {
-  constructor(config, logger) {
-    super(config, logger);
-    this.authProvider = new HumanForceAuthProvider(config, logger);
+  constructor(config) {
+    super(config);
+    this.authProvider = new HumanForceAuthProvider(config);
   }
 
   async ensureAuthenticated() {

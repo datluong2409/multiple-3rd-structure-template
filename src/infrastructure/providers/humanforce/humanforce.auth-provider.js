@@ -5,17 +5,15 @@ const { AuthenticationError } = require('../../../shared/errors');
  * HumanForce Authentication Provider
  */
 class HumanForceAuthProvider extends IAuthProvider {
-  constructor(config, logger) {
+  constructor(config) {
     super();
     this.config = config;
-    this.logger = logger;
     this.accessToken = null;
     this.tokenExpiry = null;
   }
 
   async authenticate() {
     try {
-      this.logger.info('Authenticating with HumanForce API');
       
       // Simulate authentication
       this.accessToken = `hf_token_${Date.now()}`;
@@ -29,16 +27,13 @@ class HumanForceAuthProvider extends IAuthProvider {
         expiresAt: this.tokenExpiry,
       };
 
-      this.logger.info('Successfully authenticated with HumanForce');
       return credentials;
     } catch (error) {
-      this.logger.error('Authentication failed', { provider: 'HumanForce', error: error.message });
       throw new AuthenticationError('Failed to authenticate with HumanForce', 'HumanForce');
     }
   }
 
   async refreshToken() {
-    this.logger.info('Refreshing HumanForce token');
     return this.authenticate();
   }
 
