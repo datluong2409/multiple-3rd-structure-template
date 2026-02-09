@@ -16,7 +16,8 @@ class ThirdPartyService {
    * @static
    * @returns {import('./services/timesheet.service')} TimesheetService instance
    */
-  static createTimeSheetServiceInstance() {    
+  static createTimeSheetServiceInstance(provider) {    
+
     return container.resolve('timesheetService',);
   }
 }
