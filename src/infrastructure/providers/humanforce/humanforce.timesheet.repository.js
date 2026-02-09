@@ -1,0 +1,209 @@
+const ITimesheetRepository = require('../../../core/interfaces/timesheet.repository.interface');
+const TimesheetEntity = require('../../../core/entities/timesheet.entity');
+const { RepositoryError } = require('../../../shared/errors');
+
+/**
+ * HumanForce Timesheet Repository
+ */
+class HumanForceTimesheetRepository extends ITimesheetRepository {
+  constructor(httpClient, logger) {
+    super();
+    this.client = httpClient;
+    this.logger = logger;
+  }
+
+  mapToEntity(data) {
+    return new TimesheetEntity({
+      id: data.id,
+      employeeId: data.employeeId || data.employee_id,
+      employeeName: data.employeeName || data.employee_name,
+      hours: data.hours || data.worked_hours,
+      date: data.date ? new Date(data.date) : new Date(),
+      status: data.status,
+      notes: data.notes || '',
+      createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+      updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+    });
+  }
+
+  mapToApiFormat(entity) {
+    return {
+      employeeId: entity.employeeId,
+      worked_hours: entity.hours,
+      date: entity.date,
+      status: entity.status,
+      notes: entity.notes,
+    };
+  }
+
+  async findById(id) {
+    try {
+      this.logger.info('Fetching timesheet by ID', { id, provider: 'HumanForce' });
+      
+      const data = {
+        id,
+        employeeName: 'John Doe',
+        employeeId: 'emp-456',
+        hours: 40,
+        status: 'pending',
+        date: new Date().toISOString(),
+      };
+
+      const entity = this.mapToEntity(data);
+      this.logger.info('Successfully fetched timesheet', { id });
+      return entity;
+    } catch (error) {
+      this.logger.error('Failed to fetch timesheet', { id, error: error.message });
+      throw new RepositoryError(`Failed to fetch timesheet ${id}`, error);
+    }
+  }
+
+  async findAll(filters = {}) {
+    try {
+      this.logger.info('Fetching all timesheets', { filters, provider: 'HumanForce' });
+      
+      const data = [
+        {
+          id: 1,
+          employeeName: 'John Doe',
+          employeeId: 'emp-456',
+          hours: 40,
+          status: 'pending',
+        },
+      ];
+
+      const entities = data.map(item => this.mapToEntity(item));
+      this.logger.info('Successfully fetched timesheets', { count: entities.length });
+      return entities;
+    } catch (error) {
+      this.logger.error('Failed to fetch timesheets', { error: error.message });
+      throw new RepositoryError('Failed to fetch timesheets', error);
+    }
+  }
+
+  async create(data) {
+    try {
+      this.logger.info('Creating timesheet', { provider: 'HumanForce' });
+      
+      const entity = new TimesheetEntity(data);
+      const validation = entity.validate();
+      
+      if (!validation.isValid) {
+        throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
+      }
+
+      const apiData = this.mapToApiFormat(entity);
+      const response = {
+        id: Date.now(),
+        ...apiData,
+        status: 'created',
+      };
+
+      const createdEntity = this.mapToEntity(response);
+      this.logger.info('Successfully created timesheet', { id: createdEntity.id });
+      return createdEntity;
+    } catch (error) {
+      this.logger.error('Failed to create timesheet', { error: error.message });
+      throw new RepositoryError('Failed to create timesheet', error);
+    }
+  }
+
+  async update(id, data) {
+    try {
+      this.logger.info('Updating timesheet', { id, provider: 'HumanForce' });
+      
+      const response = {
+        id,
+        ...data,
+        status: 'updated',
+      };
+
+      const entity = this.mapToEntity(response);
+      this.logger.info('Successfully updated timesheet', { id });
+      return entity;
+    } catch (error) {
+      this.logger.error('Failed to update timesheet', { id, error: error.message });
+      throw new RepositoryError(`Failed to update timesheet ${id}`, error);
+    }
+  }
+
+  async delete(id) {
+    try {
+      this.logger.info('Deleting timesheet', { id, provider: 'HumanForce' });
+      this.logger.info('Successfully deleted timesheet', { id });
+      return true;
+    } catch (error) {
+      this.logger.error('Failed to delete timesheet', { id, error: error.message });
+      throw new RepositoryError(`Failed to delete timesheet ${id}`, error);
+    }
+  }
+
+  async approve(id) {
+    try {
+      this.logger.info('Approving timesheet', { id, provider: 'HumanForce' });
+      
+      const response = {
+        id,
+        status: 'approved',
+      };
+
+      const entity = this.mapToEntity(response);
+      this.logger.info('Successfully approved timesheet', { id });
+      return entity;
+    } catch (error) {
+      this.logger.error('Failed to approve timesheet', { id, error: error.message });
+      throw new RepositoryError(`Failed to approve timesheet ${id}`, error);
+    }
+  }
+
+  async reject(id, reason) {
+    try {
+      this.logger.info('Rejecting timesheet', { id, reason, provider: 'HumanForce' });
+      
+      const response = {
+        id,
+        status: 'rejected',
+        notes: reason,
+      };
+
+      const entity = this.mapToEntity(response);
+      this.logger.info('Successfully rejected timesheet', { id });
+      return entity;
+    } catch (error) {
+      this.logger.error('Failed to reject timesheet', { id, error: error.message });
+      throw new RepositoryError(`Failed to reject timesheet ${id}`, error);
+    }
+  }
+
+  async findByEmployee(employeeId, filters = {}) {
+    try {
+      this.logger.info('Fetching timesheets by employee', { employeeId, provider: 'HumanForce' });
+      
+      const data = [];
+      const entities = data.map(item => this.mapToEntity(item));
+      
+      this.logger.info('Successfully fetched employee timesheets', { count: entities.length });
+      return entities;
+    } catch (error) {
+      this.logger.error('Failed to fetch employee timesheets', { employeeId, error: error.message });
+      throw new RepositoryError(`Failed to fetch timesheets for employee ${employeeId}`, error);
+    }
+  }
+
+  async findByDateRange(startDate, endDate) {
+    try {
+      this.logger.info('Fetching timesheets by date range', { startDate, endDate, provider: 'HumanForce' });
+      
+      const data = [];
+      const entities = data.map(item => this.mapToEntity(item));
+      
+      this.logger.info('Successfully fetched timesheets by date range', { count: entities.length });
+      return entities;
+    } catch (error) {
+      this.logger.error('Failed to fetch timesheets by date range', { error: error.message });
+      throw new RepositoryError('Failed to fetch timesheets by date range', error);
+    }
+  }
+}
+
+module.exports = HumanForceTimesheetRepository;

@@ -1,41 +1,101 @@
-const ThirdPartyTimeSheetFactory = require("./factories/timesheet.factory");
-const EHStrategy = require("./strategies/eh.strategy");
-const HumanForceStrategy = require("./strategies/humanforce.strategy");
-const MYOBStrategy = require("./strategies/myob.strategy");
+const container = require('./src/di/container');
+const logger = require('./src/shared/logger');
 
+/**
+ * Demo: Employment Hero Provider
+ */
+async function demoEmploymentHero() {
+  try {
+    logger.info('=== Employment Hero Demo ===');
+    const timesheetService = container.resolve('timesheetService');
+    
+    // Get timesheet
+    const timesheet = await timesheetService.getTimesheet('employmentHero', 1);
+    logger.info('✓ Timesheet fetched', { timesheet: timesheet.toJSON() });
+    
+    // List timesheets
+    const timesheets = await timesheetService.listTimesheets('employmentHero');
+    logger.info('✓ Timesheets listed', { count: timesheets.length });
+    
+    // Approve timesheet
+    const approved = await timesheetService.approveTimesheet('employmentHero', 1);
+    logger.info('✓ Timesheet approved', { status: approved.status });
+    
+  } catch (error) {
+    logger.error('Employment Hero demo failed', { error: error.message });
+  }
+}
+
+/**
+ * Demo: HumanForce Provider
+ */
 async function demoHumanForce() {
-    const factory = new ThirdPartyTimeSheetFactory(new HumanForceStrategy());
-    const service = factory.service;
-
-    const timesheet = await service.get(1);
-    console.log('\n✓ Result:', JSON.stringify(timesheet, null, 2));
+  try {
+    logger.info('=== HumanForce Demo ===');
+    const timesheetService = container.resolve('timesheetService');
+    
+    // Get timesheet
+    const timesheet = await timesheetService.getTimesheet('humanforce', 1);
+    logger.info('✓ Timesheet fetched', { timesheet: timesheet.toJSON() });
+    
+    // Create new timesheet
+    const newTimesheet = await timesheetService.createTimesheet('humanforce', {
+      employeeId: 'emp-new',
+      employeeName: 'New Employee',
+      hours: 8,
+      status: 'pending',
+    });
+    logger.info('✓ Timesheet created', { id: newTimesheet.id });
+    
+  } catch (error) {
+    logger.error('HumanForce demo failed', { error: error.message });
+  }
 }
 
+/**
+ * Demo: MYOB Provider
+ */
 async function demoMYOB() {
-    const factory = new ThirdPartyTimeSheetFactory(new MYOBStrategy());
-    const service = factory.service;
-
-    const timesheet = await service.get(1);
-    console.log('\n✓ Result:', JSON.stringify(timesheet, null, 2));
+  try {
+    logger.info('=== MYOB Demo ===');
+    const timesheetService = container.resolve('timesheetService');
+    
+    // Get timesheet
+    const timesheet = await timesheetService.getTimesheet('myob', 1);
+    logger.info('✓ Timesheet fetched', { timesheet: timesheet.toJSON() });
+    
+    // Update timesheet
+    const updated = await timesheetService.updateTimesheet('myob', 1, {
+      hours: 40,
+      status: 'updated',
+    });
+    logger.info('✓ Timesheet updated', { status: updated.status });
+    
+  } catch (error) {
+    logger.error('MYOB demo failed', { error: error.message });
+  }
 }
 
-async function demoEH() {
-    const factory = new ThirdPartyTimeSheetFactory(new EHStrategy());
-    const service = factory.service;
-
-    const timesheet = await service.get(1);
-    console.log('\n✓ Result:', JSON.stringify(timesheet, null, 2));
-}
-
-
-// Run all demos
+/**
+ * Main execution
+ */
 async function main() {
-      await demoHumanForce();
-      await demoMYOB();
-      await demoEH();
+  logger.info('Starting multi-provider timesheet demo...');
+  
+  try {
+    await demoEmploymentHero();
+    await demoHumanForce();
+    await demoMYOB();
+    
+    logger.info('All demos completed successfully!');
+  } catch (error) {
+    logger.error('Demo execution failed', { 
+      error: error.message,
+      stack: error.stack 
+    });
+    process.exit(1);
+  }
 }
 
-main().catch(err => {
-    console.error('Error:', err.message);
-    console.error(err.stack);
-});
+// Run the application
+main();
