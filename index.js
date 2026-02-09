@@ -1,4 +1,5 @@
 const container = require('./src/di/container');
+const { runWithConfig, createDefaultConfig } = require('./src/config');
 const logger = require('./src/shared/logger');
 
 /**
@@ -83,9 +84,15 @@ async function main() {
   logger.info('Starting multi-provider timesheet demo...');
   
   try {
-    await demoEmploymentHero();
-    await demoHumanForce();
-    await demoMYOB();
+    // Create default config
+    const config = createDefaultConfig();
+    
+    // Run demos within config context
+    await runWithConfig(config, async () => {
+    //   await demoEmploymentHero();
+      await demoHumanForce();
+    //   await demoMYOB();
+    });
     
     logger.info('All demos completed successfully!');
   } catch (error) {

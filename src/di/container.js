@@ -1,5 +1,5 @@
 const awilix = require('awilix');
-const config = require('../config');
+const { getConfig } = require('../config');
 const logger = require('../shared/logger');
 
 // HTTP Clients
@@ -23,7 +23,7 @@ const container = awilix.createContainer({
 // Register dependencies
 container.register({
   // Config & Logger
-  config: awilix.asValue(config),
+  config: awilix.asFunction(() => getConfig()).scoped(),
   logger: awilix.asValue(logger),
 
   // HTTP Clients

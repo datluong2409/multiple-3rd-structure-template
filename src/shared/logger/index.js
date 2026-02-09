@@ -1,5 +1,8 @@
 const winston = require('winston');
-const config = require('../../config');
+
+// Default configuration (can be overridden via environment variables if needed)
+const DEFAULT_LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+const DEFAULT_ENV = process.env.NODE_ENV || 'development';
 
 // Define log format
 const logFormat = winston.format.combine(
@@ -18,7 +21,7 @@ const logFormat = winston.format.combine(
 
 // Create logger instance
 const logger = winston.createLogger({
-  level: config.logLevel,
+  level: DEFAULT_LOG_LEVEL,
   format: logFormat,
   transports: [
     new winston.transports.Console({
@@ -31,7 +34,7 @@ const logger = winston.createLogger({
 });
 
 // Add file transport in production
-if (config.env === 'production') {
+if (DEFAULT_ENV === 'production') {
   logger.add(
     new winston.transports.File({
       filename: 'logs/error.log',
